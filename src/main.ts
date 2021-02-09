@@ -1,10 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { createLogger, format, Logger, transports } from 'winston';
+import { LoggingInterceptor } from './logging.interceptor';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   const options = new DocumentBuilder()
     .setTitle('User example')
     .setDescription('The User API description')
@@ -13,6 +16,15 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
+
+  const logger: Logger = createLogger({
+    level: 'info',
+    format: format.json(),
+    defaultMeta: { service: 'app-module' },
+    transports: [new transports.Console()],
+  });
+
+  app.useGlobalInterceptors(new LoggingInterceptor(logger));
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
@@ -32,6 +44,6 @@ async function bootstrap() {
 
 
   await app.listen(3000);
-  // console.log(`Application is running on: ${await app.getUrl()}`);
+  logger.info(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
