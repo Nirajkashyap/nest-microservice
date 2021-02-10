@@ -4,12 +4,83 @@
 version: '3'
 
 services:
-  sonarqube:
-        container_name:  sonarqube
-        image:  sonarqube:latest
-        ports:
-            -  "9000:9000"
-            -  "9092:9092"
+  # sonarqube:
+  #       container_name:  sonarqube
+  #       image:  sonarqube:latest
+  #       ports:
+  #           -  "9000:9000"
+  #           -  "9092:9092"
+
+  # redis:   
+  #     container_name:  redis_db
+  #     image:  redis:latest
+  #     ports:
+  #           -  "6379:6379"
+  #     networks:
+  #           - backend         
+
+  # rabbitmq:
+  #       image: rabbitmq:3.6.6-management
+  #       container_name: rabbitmq
+  #       environment:
+  #           RABBITMQ_ERLANG_COOKIE: 'RABBITMQ_ERLANG_COOKIE'
+  #           RABBITMQ_DEFAULT_USER: 'guest'
+  #           RABBITMQ_DEFAULT_PASS: 'guest'
+  #       ports:
+  #           - 5672:5672
+  #           - 15672:15672
+  #       networks:
+  #           - backend    
+
+  userapi:
+    container_name:  userapi
+    environment:
+      - EVENT_STORE_HOSTNAME=eventstore
+      - USER_API_PORT=${USER_API_PORT}
+    # env_file:
+    #   - "./apps/user-service/.env"
+    build:
+      context: "."
+      dockerfile: "./apps/user-service/Dockerfile"
+    # restart: always
+    # deploy:
+    #   mode: replicated
+    #   replicas: 1
+    ports:
+      - "${USER_API_PORT}:${USER_API_PORT}"
+    # volumes:
+    #   - "./src:/app/src"
+    # depends_on:
+    #   - redis  
+    # links:
+    #   - redis
+    networks:
+      - backend   
+      
+  orderapi:
+    container_name:  orderapi
+    environment:
+      - EVENT_STORE_HOSTNAME=eventstore
+      - ORDER_API_PORT=${ORDER_API_PORT}
+    # env_file:
+    #   - "./apps/user-service/.env"
+    build:
+      context: "."
+      dockerfile: "./apps/order/Dockerfile"
+    # restart: always
+    # deploy:
+    #   mode: replicated
+    #   replicas: 1
+    ports:
+      - "${ORDER_API_PORT}:${ORDER_API_PORT}"
+    # volumes:
+    #   - "./src:/app/src"
+    # depends_on:
+    #   - redis  
+    # links:
+    #   - redis
+    networks:
+      - backend           
 
 networks:
   backend:

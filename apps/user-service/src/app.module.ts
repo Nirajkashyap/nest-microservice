@@ -17,7 +17,7 @@ import { AppService } from './app.service';
       //   },
       // },
       {
-        name: 'ABCD' , transport: Transport.TCP,
+        name: 'ORDER_SERVICE' ,  transport: Transport.TCP, 
         // options: { retryAttempts: 5, retryDelay: 3000 },
       }
     ])

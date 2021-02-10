@@ -7,16 +7,11 @@ module.exports = {
     // First application
     {
       name: 'API',
-      script: './dist/src/app.js',
+      script: 'dist/main.js',
       // "node_args": ["--debug=7000"]
       instances: 8,
       exec_mode: 'cluster',
-      env: {
-        COMMON_VARIABLE: 'true'
-      },
-      env_production: {
-        NODE_ENV: 'production'
-      }
+      
     }
 
   
